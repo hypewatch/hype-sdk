@@ -1,5 +1,5 @@
-import { PublicKey } from "@solana/web3.js";
-import BigNumber from "bignumber.js";
+import { PublicKey } from '@solana/web3.js'
+import BigNumber from 'bignumber.js'
 
 export enum Event {
 	Error = 0,
@@ -29,23 +29,23 @@ export enum Event {
  * @property {number} slot Event slot
  */
 export interface MintOrBurnReport {
-	event: Event.Mint | Event.Burn;
-	clientId: number;
-	orderId: number;
-	tokenId: number;
-	networkId: number;
-	mint: PublicKey;
-	creator: PublicKey;
-	wallet: PublicKey;
-	address: string;
-	nickname: string;
-	supply: number;
-	creationTime: Date;
-	allTimeTradesCount: number;
-	allTimeBaseCrncyVolume: number;
-	allTimeTokensVolume: number;
-	tokensAmount: number;
-	baseCrncyAmount: BigNumber;
-	time: Date;
-	slot: number;
+	event: Event.Mint | Event.Burn
+	clientId: number
+	orderId: number
+	tokenId: number
+	networkId: number
+	mint: PublicKey
+	creator: PublicKey
+	wallet: PublicKey
+	address: string
+	nickname: string
+	supply: number
+	creationTime: Date
+	allTimeTradesCount: number
+	allTimeBaseCrncyVolume: number
+	allTimeTokensVolume: number
+	tokensAmount: number
+	baseCrncyAmount: BigNumber
+	time: Date
+	slot: number
 }

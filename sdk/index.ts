@@ -1,36 +1,36 @@
-import { Connection, PublicKey, TransactionInstruction } from "@solana/web3.js";
-import { ShortClient } from "../entities/client";
-import { ShortRoot, getFullRoot, getRoot } from "../entities/root";
-import { ShortToken } from "../entities/token";
+import { Connection, PublicKey, TransactionInstruction } from '@solana/web3.js'
+import { ShortClient } from '../entities/client'
+import { ShortRoot, getFullRoot, getRoot } from '../entities/root'
+import { ShortToken } from '../entities/token'
 import {
 	DEFAULT_PROGRAM_ID,
 	DEFAULT_RPC_URL,
 	DEFAULT_VERSION,
-} from "../lib/defaults";
-import { TokensListParams } from "../lib/token-list-params";
-import { TradeArgs } from "./build-trade-txn";
+} from '../lib/defaults'
+import { TokensListParams } from '../lib/token-list-params'
+import { TradeArgs } from './build-trade-txn'
 import {
 	ComputeBudgetSettings,
 	buildTradeTxn,
 	burn,
 	mint,
-} from "./build-trade-txn";
-import { create } from "./build-trade-txn/create";
-import { getTokenLastTransaction } from "./get-token-last-transactions";
-import { getTokenList } from "./get-token-list";
-import { getUserBalance } from "./get-user-balance";
-import { getUserPortfolio } from "./get-user-portfolio";
-import { getUserReferrals } from "./get-user-referrals";
-import { getUserTokens } from "./get-user-tokens";
+} from './build-trade-txn'
+import { create } from './build-trade-txn/create'
+import { getTokenLastTransaction } from './get-token-last-transactions'
+import { getTokenList } from './get-token-list'
+import { getUserBalance } from './get-user-balance'
+import { getUserPortfolio } from './get-user-portfolio'
+import { getUserReferrals } from './get-user-referrals'
+import { getUserTokens } from './get-user-tokens'
 import {
 	TransactionListener,
 	TransactionListenerConfig,
-} from "./transaction-listener";
+} from './transaction-listener'
 
 export type {
 	TransactionListenerConfig,
 	ParsedTransaction,
-} from "./transaction-listener";
+} from './transaction-listener'
 
 export {
 	TransactionListener,
@@ -39,7 +39,7 @@ export {
 	NEWTOKEN_TYPE,
 	INSTRUCTION_TYPE,
 	EVENT_MAP,
-} from "./transaction-listener";
+} from './transaction-listener'
 
 /**
  * HypeSDK - SDK for interacting with the Hype Protocol
@@ -56,15 +56,15 @@ export {
  */
 export class HypeSDK {
 	/** The program ID of the Hype Protocol */
-	programId: PublicKey;
+	programId: PublicKey
 	/** The version of the protocol being used */
-	version: number;
+	version: number
 	/** The Solana connection instance */
-	connection: Connection;
+	connection: Connection
 	/** The root account data */
-	root: ShortRoot | undefined;
+	root: ShortRoot | undefined
 	/** Transaction listener instance */
-	private transactionListener: TransactionListener | null = null;
+	private transactionListener: TransactionListener | null = null
 
 	/**
 	 * Creates a new instance of HypeSDK
@@ -77,9 +77,9 @@ export class HypeSDK {
 		version: number = DEFAULT_VERSION,
 		rpcURL: string = DEFAULT_RPC_URL,
 	) {
-		this.programId = programId;
-		this.version = version;
-		this.connection = new Connection(rpcURL);
+		this.programId = programId
+		this.version = version
+		this.connection = new Connection(rpcURL)
 	}
 
 	/**
@@ -88,7 +88,7 @@ export class HypeSDK {
 	 * @throws {Error} If initialization fails
 	 */
 	async initRoot(this: HypeSDK) {
-		this.root = await getRoot(this.programId, this.version, this.connection);
+		this.root = await getRoot(this.programId, this.version, this.connection)
 	}
 
 	/**
@@ -97,7 +97,7 @@ export class HypeSDK {
 	 * @throws {Error} If initialization fails
 	 */
 	async printFullRoot(this: HypeSDK) {
-		return await getFullRoot(this.programId, this.version, this.connection);
+		return await getFullRoot(this.programId, this.version, this.connection)
 	}
 
 	/**
@@ -105,7 +105,7 @@ export class HypeSDK {
 	 * @throws {Error} If root is not initialized
 	 */
 	checkNoRootError(this: HypeSDK) {
-		if (!this.root) throw Error("Init root first!");
+		if (!this.root) throw Error('Init root first!')
 	}
 
 	/**
@@ -115,7 +115,7 @@ export class HypeSDK {
 	 * @throws {Error} If root is not initialized
 	 */
 	getUserTokens(this: HypeSDK, publicKey: PublicKey) {
-		return getUserTokens(this, publicKey);
+		return getUserTokens(this, publicKey)
 	}
 
 	/**
@@ -125,7 +125,7 @@ export class HypeSDK {
 	 * @throws {Error} If root is not initialized
 	 */
 	getUserBalance(this: HypeSDK, publicKey: PublicKey) {
-		return getUserBalance(this, publicKey);
+		return getUserBalance(this, publicKey)
 	}
 
 	/**
@@ -135,7 +135,7 @@ export class HypeSDK {
 	 * @throws {Error} If root is not initialized
 	 */
 	getUserPortfolio(this: HypeSDK, publicKey: PublicKey) {
-		return getUserPortfolio(this, publicKey);
+		return getUserPortfolio(this, publicKey)
 	}
 
 	/**
@@ -145,7 +145,7 @@ export class HypeSDK {
 	 * @throws {Error} If root is not initialized
 	 */
 	getUserReferrals(this: HypeSDK, publicKey: PublicKey) {
-		return getUserReferrals(this, publicKey);
+		return getUserReferrals(this, publicKey)
 	}
 
 	/**
@@ -155,7 +155,7 @@ export class HypeSDK {
 	 * @throws {Error} If root is not initialized
 	 */
 	getTokenList(this: HypeSDK, params?: TokensListParams) {
-		return getTokenList(this, params);
+		return getTokenList(this, params)
 	}
 
 	/**
@@ -165,7 +165,7 @@ export class HypeSDK {
 	 * @throws {Error} If root is not initialized
 	 */
 	getTokenLastTransaction(this: HypeSDK, mint: PublicKey) {
-		return getTokenLastTransaction(this, mint);
+		return getTokenLastTransaction(this, mint)
 	}
 
 	/**
@@ -182,7 +182,7 @@ export class HypeSDK {
 		client: ShortClient,
 		tradeArgs: TradeArgs,
 	) {
-		return mint(this, token, client, tradeArgs);
+		return mint(this, token, client, tradeArgs)
 	}
 
 	/**
@@ -199,7 +199,7 @@ export class HypeSDK {
 		client: ShortClient,
 		tradeArgs: TradeArgs,
 	) {
-		return burn(this, token, client, tradeArgs);
+		return burn(this, token, client, tradeArgs)
 	}
 
 	/**
@@ -216,7 +216,7 @@ export class HypeSDK {
 		client: ShortClient,
 		tradeArgs: TradeArgs,
 	) {
-		return create(this, token, client, tradeArgs);
+		return create(this, token, client, tradeArgs)
 	}
 
 	/**
@@ -231,7 +231,7 @@ export class HypeSDK {
 		ix: TransactionInstruction,
 		computeBudgetSettings: ComputeBudgetSettings,
 	) {
-		return buildTradeTxn(this, ix, computeBudgetSettings);
+		return buildTradeTxn(this, ix, computeBudgetSettings)
 	}
 
 	/**
@@ -243,12 +243,12 @@ export class HypeSDK {
 		config: TransactionListenerConfig,
 	): Promise<void> {
 		if (this.transactionListener) {
-			console.warn("Transaction listener is already initialized");
-			return;
+			console.warn('Transaction listener is already initialized')
+			return
 		}
 
-		this.transactionListener = new TransactionListener(config);
-		await this.transactionListener.start(config.onTransaction);
+		this.transactionListener = new TransactionListener(config)
+		await this.transactionListener.start(config.onTransaction)
 	}
 
 	/**
@@ -256,8 +256,8 @@ export class HypeSDK {
 	 */
 	public stopTransactionListener(): void {
 		if (this.transactionListener) {
-			this.transactionListener.stop();
-			this.transactionListener = null;
+			this.transactionListener.stop()
+			this.transactionListener = null
 		}
 	}
 }

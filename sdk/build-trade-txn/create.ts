@@ -3,23 +3,23 @@ import {
 	TOKEN_2022_PROGRAM_ID,
 	TOKEN_PROGRAM_ID,
 	getAssociatedTokenAddressSync,
-} from "@solana/spl-token";
+} from '@solana/spl-token'
 import {
 	Keypair,
 	PublicKey,
 	SystemProgram,
 	TransactionInstruction,
-} from "@solana/web3.js";
-import { TradeArgs } from ".";
-import { HypeSDK } from "..";
-import { NicknameStringLength, ShortClient } from "../../entities/client";
-import { ShortToken } from "../../entities/token";
-import { calculateMint } from "../../lib/calculations";
+} from '@solana/web3.js'
+import { TradeArgs } from '.'
+import { HypeSDK } from '..'
+import { NicknameStringLength, ShortClient } from '../../entities/client'
+import { ShortToken } from '../../entities/token'
+import { calculateMint } from '../../lib/calculations'
 import {
 	findClientAccountAddress,
 	findHypeAuthorityAddress,
 	findTokenAccountAddress,
-} from "../../lib/contract-utils";
+} from '../../lib/contract-utils'
 
 export const create = async (
 	ctx: HypeSDK,
@@ -27,83 +27,78 @@ export const create = async (
 	client: ShortClient,
 	tradeArgs: TradeArgs,
 ) => {
-	const hypeAuthority = findHypeAuthorityAddress(ctx.programId);
+	const hypeAuthority = findHypeAuthorityAddress(ctx.programId)
 	const clientAccount = findClientAccountAddress(
 		ctx.programId,
 		client.wallet,
 		ctx.version,
-	);
+	)
 	const aTokenAcc = getAssociatedTokenAddressSync(
 		ctx.root?.baseCrncyMint!,
 		client.wallet,
-	);
+	)
 	const tokenAccount = findTokenAccountAddress(
 		ctx.programId,
 		token.networkId,
 		token.address,
 		ctx.version,
-	);
-	let tokenMint: PublicKey | null;
-	let tokenMintKeypair: Keypair | null;
-	let tokenProgram: PublicKey | null;
-	let tokenProgramKeypair: Keypair | null;
-	const signers = [];
-
-	tokenMint = null;
-	tokenProgram = null;
-	tokenMintKeypair = tradeArgs.customPk || Keypair.generate();
-	tokenProgramKeypair = Keypair.generate();
-	signers.push(tokenMintKeypair);
-	signers.push(tokenProgramKeypair);
+	)
+	const tokenMint: PublicKey | null = null
+	const tokenMintKeypair: Keypair = tradeArgs.customPk || Keypair.generate()
+	const tokenProgram: PublicKey | null = null
+	const tokenProgramKeypair: Keypair = Keypair.generate()
+	const signers = []
+	signers.push(tokenMintKeypair)
+	signers.push(tokenProgramKeypair)
 
 	const aHypeAcc = getAssociatedTokenAddressSync(
 		tokenMint == null ? tokenMintKeypair!.publicKey : tokenMint,
 		client.wallet,
 		false,
 		TOKEN_2022_PROGRAM_ID,
-	);
+	)
 
-	var buf = Buffer.alloc(80);
-	buf.writeUint8(4, 0);
-	buf.writeUint32LE(token.networkId, 4);
-	buf.writeBigInt64LE(BigInt(tradeArgs.amount * 1000000), 8);
-	if (client.nickname != undefined) {
+	const buf = Buffer.alloc(80)
+	buf.writeUint8(4, 0)
+	buf.writeUint32LE(token.networkId, 4)
+	buf.writeBigInt64LE(BigInt(tradeArgs.amount * 1000000), 8)
+	if (client.nickname !== undefined) {
 		buf.write(
 			client.nickname,
 			48,
 			Math.min(NicknameStringLength, client.nickname.length),
-			"utf-8",
-		);
+			'utf-8',
+		)
 	}
 	if (tradeArgs.slippagePercent && tradeArgs.slippagePercent > 0) {
-		const { cost } = calculateMint(token.supply, tradeArgs.amount, ctx.root!);
+		const { cost } = calculateMint(token.supply, tradeArgs.amount, ctx.root!)
 		const limitBigInt = BigInt(
 			cost
 				.multipliedBy(1 + tradeArgs.slippagePercent / 100)
 				.toFixed(6)
-				.replace(".", ""),
-		);
-		buf.writeBigInt64LE(limitBigInt, 16);
+				.replace('.', ''),
+		)
+		buf.writeBigInt64LE(limitBigInt, 16)
 	}
 	buf.write(
 		token.address.toLowerCase(),
 		24,
 		Math.min(NicknameStringLength, token.address.length),
-		"utf-8",
-	);
-	let refWallet: PublicKey;
-	let refAccount: PublicKey;
-	if (client.refWallet != undefined) {
-		refWallet = client.refWallet;
+		'utf-8',
+	)
+	let refWallet: PublicKey
+	let refAccount: PublicKey
+	if (client.refWallet !== undefined) {
+		refWallet = client.refWallet
 		refAccount = getAssociatedTokenAddressSync(
 			ctx.root?.baseCrncyMint!,
 			client.refWallet,
 			false,
 			TOKEN_PROGRAM_ID,
-		);
+		)
 	} else {
-		refWallet = SystemProgram.programId;
-		refAccount = SystemProgram.programId;
+		refWallet = SystemProgram.programId
+		refAccount = SystemProgram.programId
 	}
 	const instruction = new TransactionInstruction({
 		keys: [
@@ -144,9 +139,9 @@ export const create = async (
 		],
 		programId: ctx.programId,
 		data: buf,
-	});
+	})
 	return {
 		instruction: instruction,
 		signers: signers as Keypair[],
-	};
-};
+	}
+}

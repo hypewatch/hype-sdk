@@ -1,12 +1,12 @@
-import { PublicKey } from "@solana/web3.js";
-import BigNumber from "bignumber.js";
-import { getString, readPubKey } from "../../lib/buf-utils";
-import { calculateTokenPrice } from "../../lib/calculations";
-import { NetworkStringLength } from "../network-record";
-import { ShortRoot } from "../root";
-import { TokenAccountOffsets } from "./offsets";
+import { PublicKey } from '@solana/web3.js'
+import BigNumber from 'bignumber.js'
+import { getString, readPubKey } from '../../lib/buf-utils'
+import { calculateTokenPrice } from '../../lib/calculations'
+import { NetworkStringLength } from '../network-record'
+import { ShortRoot } from '../root'
+import { TokenAccountOffsets } from './offsets'
 
-export * from "./offsets";
+export * from './offsets'
 
 /**
  * Represents the raw token account data as stored on-chain
@@ -14,37 +14,37 @@ export * from "./offsets";
  */
 export class TokenAccountData {
 	/** Tag identifying the account type */
-	tag: number;
+	tag: number
 	/** Version of the account data structure */
-	version: number;
+	version: number
 	/** Unique identifier for the token account */
-	id: number;
+	id: number
 	/** Public key of the token's mint account */
-	mint: PublicKey;
+	mint: PublicKey
 	/** Public key of the token program that owns this account */
-	programAddress: PublicKey;
+	programAddress: PublicKey
 	/** Public key of the account that created this token */
-	creator: PublicKey;
+	creator: PublicKey
 	/** Timestamp when the token was created */
-	creationTime: Date;
+	creationTime: Date
 	/** Last update timestamp */
-	time: Date;
+	time: Date
 	/** Current token supply */
-	supply: number;
+	supply: number
 	/** Token's network address */
-	address: string;
+	address: string
 	/** Network identifier */
-	network: number;
+	network: number
 	/** Slot number of the last update */
-	slot: number;
+	slot: number
 	/** Total number of trades for this token */
-	allTimeTradesCount: number;
+	allTimeTradesCount: number
 	/** Total volume in base currency */
-	allTimeBaseCrncyVolume: number;
+	allTimeBaseCrncyVolume: number
 	/** Total volume in token units */
-	allTimeTokensVolume: number;
+	allTimeTokensVolume: number
 	/** Validation status */
-	validation: number;
+	validation: number
 
 	/**
 	 * Creates a new TokenAccountData instance from a buffer
@@ -52,36 +52,36 @@ export class TokenAccountData {
 	 * @param root - The root account data for calculations
 	 */
 	constructor(buf: Buffer, root: ShortRoot) {
-		this.tag = buf.readUint32LE(TokenAccountOffsets.Tag);
-		this.version = buf.readUint32LE(TokenAccountOffsets.Version);
-		this.id = Number(buf.readBigInt64LE(TokenAccountOffsets.Id));
-		this.mint = readPubKey(buf, TokenAccountOffsets.Mint);
-		this.programAddress = readPubKey(buf, TokenAccountOffsets.ProgramAddress);
-		this.creator = readPubKey(buf, TokenAccountOffsets.Creator);
+		this.tag = buf.readUint32LE(TokenAccountOffsets.Tag)
+		this.version = buf.readUint32LE(TokenAccountOffsets.Version)
+		this.id = Number(buf.readBigInt64LE(TokenAccountOffsets.Id))
+		this.mint = readPubKey(buf, TokenAccountOffsets.Mint)
+		this.programAddress = readPubKey(buf, TokenAccountOffsets.ProgramAddress)
+		this.creator = readPubKey(buf, TokenAccountOffsets.Creator)
 		this.creationTime = new Date(
 			buf.readUint32LE(TokenAccountOffsets.CreationTime) * 1000,
-		);
-		this.time = new Date(buf.readUint32LE(TokenAccountOffsets.Time) * 1000);
+		)
+		this.time = new Date(buf.readUint32LE(TokenAccountOffsets.Time) * 1000)
 		this.supply =
 			Number(buf.readBigInt64LE(TokenAccountOffsets.Supply)) /
-			root.baseCrncyDecsFactor;
+			root.baseCrncyDecsFactor
 		this.address = getString(
 			buf,
 			TokenAccountOffsets.Address,
 			NetworkStringLength,
-		);
-		this.slot = Number(buf.readBigInt64LE(TokenAccountOffsets.Slot));
-		this.network = buf.readUint32LE(TokenAccountOffsets.Network);
+		)
+		this.slot = Number(buf.readBigInt64LE(TokenAccountOffsets.Slot))
+		this.network = buf.readUint32LE(TokenAccountOffsets.Network)
 		this.allTimeBaseCrncyVolume =
 			Number(buf.readBigInt64LE(TokenAccountOffsets.AllTimeBaseCrncyVolume)) /
-			root.baseCrncyDecsFactor;
+			root.baseCrncyDecsFactor
 		this.allTimeTokensVolume =
 			Number(buf.readBigInt64LE(TokenAccountOffsets.AllTimeTokensVolume)) /
-			root.baseCrncyDecsFactor;
+			root.baseCrncyDecsFactor
 		this.allTimeTradesCount = Number(
 			buf.readBigInt64LE(TokenAccountOffsets.AllTimeTradesCount),
-		);
-		this.validation = buf.readUint32LE(TokenAccountOffsets.Validation);
+		)
+		this.validation = buf.readUint32LE(TokenAccountOffsets.Validation)
 	}
 }
 
@@ -91,21 +91,21 @@ export class TokenAccountData {
  */
 export class ShortToken {
 	/** Public key of the token's mint account */
-	mint: PublicKey;
+	mint: PublicKey
 	/** Public key of the token program */
-	tokenProgramId: PublicKey;
+	tokenProgramId: PublicKey
 	/** Token's network address */
-	address: string;
+	address: string
 	/** Network identifier */
-	networkId: number;
+	networkId: number
 	/** Network descriptor string */
-	network: string;
+	network: string
 	/** Current token price */
-	price: BigNumber;
+	price: BigNumber
 	/** Current token supply */
-	supply: number;
+	supply: number
 	/** Token creation timestamp */
-	creationTime: Date;
+	creationTime: Date
 
 	/**
 	 * Creates a new ShortToken instance from TokenAccountData
@@ -113,14 +113,14 @@ export class ShortToken {
 	 * @param root - The root account data for calculations
 	 */
 	constructor(tad: TokenAccountData, root: ShortRoot) {
-		this.mint = tad.mint;
-		this.tokenProgramId = tad.programAddress;
-		this.address = tad.address;
-		this.networkId = tad.network;
-		this.network = root.networks[tad.network].descriptor;
-		this.supply = tad.supply;
-		this.price = calculateTokenPrice(tad.supply, root);
-		this.creationTime = tad.creationTime;
+		this.mint = tad.mint
+		this.tokenProgramId = tad.programAddress
+		this.address = tad.address
+		this.networkId = tad.network
+		this.network = root.networks[tad.network].descriptor
+		this.supply = tad.supply
+		this.price = calculateTokenPrice(tad.supply, root)
+		this.creationTime = tad.creationTime
 	}
 }
 
@@ -128,4 +128,4 @@ export class ShortToken {
  * Represents a token with its user-specific balance
  * This type extends ShortToken with balance information
  */
-export type UserToken = ShortToken & { balance: BigNumber };
+export type UserToken = ShortToken & { balance: BigNumber }

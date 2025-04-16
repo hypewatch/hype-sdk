@@ -5,7 +5,8 @@
 			"pnpm-lock.yaml",
 			"tsconfig.json",
 			"tsconfig.*.json",
-			"package-lock.json"
+			"package-lock.json",
+			"dist"
 		]
 	},
 	"formatter": {

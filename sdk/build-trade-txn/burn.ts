@@ -1,21 +1,21 @@
 import {
 	ASSOCIATED_TOKEN_PROGRAM_ID,
-	getAssociatedTokenAddressSync,
 	TOKEN_2022_PROGRAM_ID,
 	TOKEN_PROGRAM_ID,
+	getAssociatedTokenAddressSync,
 } from '@solana/spl-token'
+import { SystemProgram, TransactionInstruction } from '@solana/web3.js'
 import { HypeSDK } from '../'
+import { NicknameStringLength, ShortClient } from '../../entities/client'
+import { Event } from '../../entities/report'
+import { ShortToken } from '../../entities/token'
+import { calculateBurn } from '../../lib/calculations'
 import {
 	findClientAccountAddress,
 	findHypeAuthorityAddress,
 	findTokenAccountAddress,
 } from '../../lib/contract-utils'
-import { SystemProgram, TransactionInstruction } from '@solana/web3.js'
-import { NicknameStringLength, ShortClient } from '../../entities/client'
-import { ShortToken } from '../../entities/token'
 import { TradeArgs } from './'
-import { Event } from '../../entities/report'
-import { calculateBurn } from '../../lib/calculations'
 
 export const burn = async (
 	ctx: HypeSDK,

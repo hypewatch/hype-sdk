@@ -1,34 +1,34 @@
-import BigNumber from "bignumber.js";
-import { ShortToken } from "../entities/token";
+import BigNumber from 'bignumber.js'
+import { ShortToken } from '../entities/token'
 
 /**
  * Numeric filter parameters for token list filtering
  */
 export type NumFilters = {
 	/** Less than */
-	lt?: BigNumber | number;
+	lt?: BigNumber | number
 	/** Less than or equal */
-	lte?: BigNumber | number;
+	lte?: BigNumber | number
 	/** Greater than */
-	gt?: BigNumber | number;
+	gt?: BigNumber | number
 	/** Greater than or equal */
-	gte?: BigNumber | number;
+	gte?: BigNumber | number
 	/** Equal to */
-	eq?: BigNumber | number;
-};
+	eq?: BigNumber | number
+}
 
 /** Available fields for filtering */
-export type FilterFields = "price" | "supply" | "creationTime" | "networkId";
+export type FilterFields = 'price' | 'supply' | 'creationTime' | 'networkId'
 
 /**
  * Filter parameters for token list
  */
 export type TokensFilterParams = {
 	/** Field to filter on */
-	field: FilterFields;
+	field: FilterFields
 	/** Filter conditions */
-	filters: NumFilters;
-}[];
+	filters: NumFilters
+}[]
 
 /**
  * Applies filters to a list of tokens
@@ -40,75 +40,75 @@ export function useTokensFilter(
 	tokens: ShortToken[],
 	filters?: TokensFilterParams,
 ) {
-	if (!filters || !filters.length) return tokens;
+	if (!filters || !filters.length) return tokens
 
-	let filteredTokens: ShortToken[] = [...tokens];
+	let filteredTokens: ShortToken[] = [...tokens]
 
 	for (const filter of filters) {
-		const { field, filters: filterConditions } = filter;
-		const { lt, lte, gt, gte, eq } = filterConditions;
+		const { field, filters: filterConditions } = filter
+		const { lt, lte, gt, gte, eq } = filterConditions
 
 		filteredTokens = filteredTokens.filter((t) => {
 			switch (field) {
-				case "price":
+				case 'price':
 					return (
 						(lt === undefined || t.price.isLessThan(lt)) &&
 						(lte === undefined || t.price.isLessThanOrEqualTo(lte)) &&
 						(gt === undefined || t.price.isGreaterThan(gt)) &&
 						(gte === undefined || t.price.isGreaterThanOrEqualTo(gte)) &&
 						(eq === undefined || t.price.isEqualTo(eq))
-					);
-				case "supply":
-					const supply = new BigNumber(t.supply);
+					)
+				case 'supply': {
+					const supply = new BigNumber(t.supply)
 					return (
 						(lt === undefined || supply.isLessThan(lt)) &&
 						(lte === undefined || supply.isLessThanOrEqualTo(lte)) &&
-						(gt === undefined || supply.isGreaterThan(gt)) &&
 						(gte === undefined || supply.isGreaterThanOrEqualTo(gte)) &&
 						(eq === undefined || supply.isEqualTo(eq))
-					);
-				case "creationTime":
-					const creationTime = new BigNumber(t.creationTime.getTime());
+					)
+				}
+				case 'creationTime': {
+					const creationTime = new BigNumber(t.creationTime.getTime())
 					return (
 						(lt === undefined || creationTime.isLessThan(lt)) &&
 						(lte === undefined || creationTime.isLessThanOrEqualTo(lte)) &&
-						(gt === undefined || creationTime.isGreaterThan(gt)) &&
 						(gte === undefined || creationTime.isGreaterThanOrEqualTo(gte)) &&
 						(eq === undefined || creationTime.isEqualTo(eq))
-					);
-				case "networkId":
-          const id = new BigNumber(t.networkId);
+					)
+				}
+				case 'networkId': {
+					const id = new BigNumber(t.networkId)
 					return (
 						(lt === undefined || id.isLessThan(lt)) &&
 						(lte === undefined || id.isLessThanOrEqualTo(lte)) &&
-						(gt === undefined || id.isGreaterThan(gt)) &&
 						(gte === undefined || id.isGreaterThanOrEqualTo(gte)) &&
 						(eq === undefined || id.isEqualTo(eq))
-					);
+					)
+				}
 				default:
-					return true;
+					return true
 			}
-		});
+		})
 	}
 
-	return filteredTokens;
+	return filteredTokens
 }
 
 /** Sort direction options */
-export type SortDirection = "asc" | "desc";
+export type SortDirection = 'asc' | 'desc'
 
 /** Available fields for sorting */
-export type SortField = "supply" | "creationTime";
+export type SortField = 'supply' | 'creationTime'
 
 /**
  * Sort parameters for token list
  */
 export type TokensSortParams = {
 	/** Field to sort by */
-	field: SortField;
+	field: SortField
 	/** Sort direction */
-	direction: SortDirection;
-};
+	direction: SortDirection
+}
 
 /**
  * Applies sorting to a list of tokens
@@ -120,36 +120,36 @@ export const useTokensSort = (
 	tokens: ShortToken[],
 	sort?: TokensSortParams,
 ) => {
-	if (!sort || !tokens.length) return tokens;
-	const { field, direction } = sort;
-	if (typeof tokens[0][field] === "number") {
+	if (!sort || !tokens.length) return tokens
+	const { field, direction } = sort
+	if (typeof tokens[0][field] === 'number') {
 		return tokens.sort((a, b) => {
 			return (
 				((a[field] as number) - (b[field] as number)) *
-				(direction === "asc" ? 1 : -1)
-			);
-		});
+				(direction === 'asc' ? 1 : -1)
+			)
+		})
 	}
-	if (typeof tokens[0][field].getMonth === "function") {
+	if (typeof tokens[0][field].getMonth === 'function') {
 		return tokens.sort((a, b) => {
-			if (direction === "asc") {
-				return a[field].toString() < b[field].toString() ? -1 : 1;
+			if (direction === 'asc') {
+				return a[field].toString() < b[field].toString() ? -1 : 1
 			}
-			return a[field].toString() > b[field].toString() ? -1 : 1;
-		});
+			return a[field].toString() > b[field].toString() ? -1 : 1
+		})
 	}
-	return tokens;
-};
+	return tokens
+}
 
 /**
  * Pagination parameters for token list
  */
 export type TokensPaginationParams = {
 	/** Maximum number of items to return */
-	limit: number;
+	limit: number
 	/** Number of items to skip */
-	offset: number;
-};
+	offset: number
+}
 
 /**
  * Applies pagination to a list of tokens
@@ -161,10 +161,10 @@ export const useTokensPagination = (
 	tokens: ShortToken[],
 	pagination?: TokensPaginationParams,
 ) => {
-	if (!pagination || !tokens.length) return tokens;
-	const { limit, offset } = pagination;
-	return tokens.slice(offset, offset + limit);
-};
+	if (!pagination || !tokens.length) return tokens
+	const { limit, offset } = pagination
+	return tokens.slice(offset, offset + limit)
+}
 
 /**
  * Complete parameters for token list operations
@@ -172,9 +172,9 @@ export const useTokensPagination = (
  */
 export type TokensListParams = {
 	/** Filter parameters */
-	filters?: TokensFilterParams;
+	filters?: TokensFilterParams
 	/** Sort parameters */
-	sort?: TokensSortParams;
+	sort?: TokensSortParams
 	/** Pagination parameters */
-	pagination?: TokensPaginationParams;
-};
+	pagination?: TokensPaginationParams
+}

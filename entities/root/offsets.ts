@@ -1,5 +1,5 @@
-import { PublicKey } from "@solana/web3.js";
-import { NetworkRecord } from "../network-record";
+import { PublicKey } from '@solana/web3.js'
+import { NetworkRecord } from '../network-record'
 
 export enum RootAccountOffsets {
 	Tag = 0,
@@ -40,52 +40,52 @@ export enum RootAccountOffsets {
 }
 
 export type ShortRoot = {
-	address: PublicKey;
-	baseCrncyDecsFactor: number;
-	maxSupply: number;
-	initPrice: number;
-	feeRate: number;
-	minFees: number;
-	networks: NetworkRecord[];
-	baseCrncyMint: PublicKey;
-	baseCrncyProgramAddress: PublicKey;
-};
+	address: PublicKey
+	baseCrncyDecsFactor: number
+	maxSupply: number
+	initPrice: number
+	feeRate: number
+	minFees: number
+	networks: NetworkRecord[]
+	baseCrncyMint: PublicKey
+	baseCrncyProgramAddress: PublicKey
+}
 
 export type FullRoot = {
-	address: PublicKey;
-	tag: number;
-	version: number;
-	admin: PublicKey;
-	feeWallet: PublicKey;
-	baseCrncyMint: PublicKey;
-	baseCrncyProgramAddress: PublicKey;
-	clientsCount: number;
-	tokensCount: number;
-	fees: number;
-	networksCount: number;
-	baseCrncyDecsFactor: number;
-	slot: number;
-	time: Date;
-	decimals: number;
-	supply: number;
-	tvl: number;
-	counter: number;
-	allTimeBaseCrncyVolume: number;
-	allTimeTokensVolume: number;
-	holderFees: number;
-	initPrice: number;
-	maxSupply: number;
-	feeRatio: number;
-	feeRate: number;
-	creationFee: number;
-	maxNetworksCount: number;
-	creationTime: Date;
-	minFees: number;
-	networks: NetworkRecord[];
-	operatorName: string;
-	refDuration: number;
-	mask: number;
-	refDiscount: number;
-	refRatio: number;
-	urlPrefix: string;
-};
+	address: PublicKey
+	tag: number
+	version: number
+	admin: PublicKey
+	feeWallet: PublicKey
+	baseCrncyMint: PublicKey
+	baseCrncyProgramAddress: PublicKey
+	clientsCount: number
+	tokensCount: number
+	fees: number
+	networksCount: number
+	baseCrncyDecsFactor: number
+	slot: number
+	time: Date
+	decimals: number
+	supply: number
+	tvl: number
+	counter: number
+	allTimeBaseCrncyVolume: number
+	allTimeTokensVolume: number
+	holderFees: number
+	initPrice: number
+	maxSupply: number
+	feeRatio: number
+	feeRate: number
+	creationFee: number
+	maxNetworksCount: number
+	creationTime: Date
+	minFees: number
+	networks: NetworkRecord[]
+	operatorName: string
+	refDuration: number
+	mask: number
+	refDiscount: number
+	refRatio: number
+	urlPrefix: string
+}
